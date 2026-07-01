@@ -1,4 +1,6 @@
 import json
+from annotation import Annotation
+from mask_functions import *
 
 # Given the path of the json file as a string, return a dictionary containing the data
 def load_json(path):
@@ -10,26 +12,29 @@ def get_annotations(data):
     return data["annotations"]
 
 def parse_annotation(ann):
-    new_ann = ann.copy()
-    obj_id = new_ann["_id"]
-    del new_ann["_id"]
-    new_ann["object_id"] = obj_id
-    obj_coordinates = new_ann["coordinates"]
-    coordinate_list = []
-    for point in obj_coordinates:
+    object_id = ann["_id"]
+    dataset_id = ann["datasetId"]
+    tags = ann["tags"]
+    shape = ann["shape"]
+    location = ann["location"]
+    channel = ann["channel"]
+    coordinates = ann["coordinates"]
+    formatted_coordinates = []
+    for point in coordinates:
         x_coordinate = point["x"]
         y_coordinate = point["y"]
-        coordinate_list.append((x_coordinate,y_coordinate))
-    new_ann["coordinates"] = coordinate_list
-    return new_ann
+        formatted_coordinates.append([x_coordinate,y_coordinate])
+    annotation_object = Annotation(object_id, dataset_id, tags, shape, location, channel, formatted_coordinates)
+    return annotation_object
 
 def parse_annotations(path):
     data = load_json(path)
     annotations = get_annotations(data)
     annotation_list = []
-    for obj in annotations:
-        annotation_list.append(parse_annotation(obj))
+    for ann in annotations:
+        annotation_list.append(parse_annotation(ann))
     return annotation_list
+
 
 def get_annotation_property_values(data):
     return data["annotationPropertyValues"]
@@ -45,7 +50,7 @@ def parse_annotation_property_value(apv):
         measurement_dict = (new_apv[obj_id])[measurement_id]
         for (metric, value) in measurement_dict.items():
             if metric == "Centroid":
-                apv_dict[metric] = (value["x"], value["y"])
+                apv_dict[metric] = [value["x"], value["y"]]
             else:
                 apv_dict[metric] = value
         apv_list.append(apv_dict)
@@ -57,9 +62,9 @@ def parse_annotation_property_values(path):
     apv_list = parse_annotation_property_value(apv)
     return apv_list
 
-path = "data/sample_mlo.json"
+path = "data/sample_mlo_advanced.json"
+path2 = "data/sample_mlo.json"
 data = parse_annotations(path)
 data2 = parse_annotation_property_values(path)
-
-print(data)
-print(data2)
+combined_mask = combine_masks(data,2048,2048)
+print(convert_to_image(combined_mask))
