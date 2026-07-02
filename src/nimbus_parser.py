@@ -1,6 +1,5 @@
 import json
-from annotation import Annotation
-from mask_functions import *
+from annotation import *
 
 # Given the path of the json file as a string, return a dictionary containing the data
 def load_json(path):
@@ -25,15 +24,20 @@ def parse_annotation(ann):
         y_coordinate = point["y"]
         formatted_coordinates.append([x_coordinate,y_coordinate])
     annotation_object = Annotation(object_id, dataset_id, tags, shape, location, channel, formatted_coordinates)
-    return annotation_object
+    return (annotation_object, tags)
 
 def parse_annotations(path):
     data = load_json(path)
     annotations = get_annotations(data)
-    annotation_list = []
+    annotations_dict = {}
     for ann in annotations:
-        annotation_list.append(parse_annotation(ann))
-    return annotation_list
+        (annotation_object, tags) = parse_annotation(ann)
+        for tag in tags:
+            if tag in annotations_dict:
+                annotations_dict[tag].append(annotation_object)
+            else:
+                annotations_dict[tag] = [annotation_object]
+    return annotations_dict
 
 
 def get_annotation_property_values(data):
@@ -61,10 +65,3 @@ def parse_annotation_property_values(path):
     apv = get_annotation_property_values(data)
     apv_list = parse_annotation_property_value(apv)
     return apv_list
-
-path = "data/sample_mlo_advanced.json"
-path2 = "data/sample_mlo.json"
-data = parse_annotations(path)
-data2 = parse_annotation_property_values(path)
-combined_mask = combine_masks(data,2048,2048)
-print(convert_to_image(combined_mask))

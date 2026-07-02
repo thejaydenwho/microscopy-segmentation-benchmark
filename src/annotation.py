@@ -11,13 +11,14 @@ class Annotation:
         self.channel = channel
         self.coordinates = coordinates
         self.mask = None
+        
     def __str__(self):
-        print(f"Object ID: {self.object_id}")
-        print(f"Dataset ID: {self.dataset_id}")
-        print(f"Tags: {self.tags}")
-        print(f"Shape: {self.shape}")
-        print(f"Location: {self.location}")
-        print(f"Channel: {self.channel}")
+        return(f'''Object ID: {self.object_id}\n
+               Dataset ID: {self.dataset_id}\n
+               Tags: {self.tags}\n
+               Shape: {self.shape}\n
+               Location: {self.location}\n
+               Channel: {self.channel}''')
 
     def generate_mask(self, image_width, image_height):
         mask = np.zeros((image_height, image_width), dtype=np.uint8)
