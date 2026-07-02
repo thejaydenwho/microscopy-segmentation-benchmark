@@ -5,10 +5,10 @@ from mask_functions import *
 from metrics import *
 from visualization import *
 
-path = "data/largescale_mlo.json"
+path = "data/sample_DAPI.json"
 path2 = "data/sample_mlo.json"
 data = parse_annotations(path)
 data2 = parse_annotation_property_values(path)
 print(list(data.keys()))
 
-print(visualize_benchmark("manual_rRNA_annotation",['cellpose_sam_rRNA_annotation', 'condensate_net_rRNA_annotation', 'stardist_rRNA_annotation'],data,2048,1024))
+print(visualize_benchmark("manual_DAPI_annotation",['cellpose_sam_DAPI_annotation', 'stardist_DAPI_annotation'],data,2048,1024))
