@@ -5,16 +5,16 @@ from metrics import *
 from benchmark import *
 
 # import a list of tags (being the different annotation groups compared in the benchmark)
-def run_group_benchmark(accurate_tag, comparison_tags, annotations_dict, image_width, image_height):
+def run_group_benchmark(accurate_tag, comparison_tags, annotations_dict):
     functions = [iou, dice_coefficient, precision, recall]
     accurate_annotations = annotations_dict[accurate_tag]
-    accurate_mask = combine_masks(accurate_annotations, image_width, image_height)
+    accurate_mask = combine_masks(accurate_annotations)
     x_labels = [func.__name__.replace("_", " ").upper() for func in functions]
     x_labels.append("RELATIVE ERROR")
     series_data = []
     for comparison_tag in comparison_tags:
         comparison_annotations = annotations_dict[comparison_tag]
-        comparison_mask = combine_masks(comparison_annotations, image_width, image_height)
+        comparison_mask = combine_masks(comparison_annotations)
         trial_data = []
         output = None
         for func in functions:

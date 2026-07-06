@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from config import *
 
 class Annotation:
     def __init__(self, object_id, dataset_id, tags, shape, location, channel, coordinates):
@@ -20,13 +21,22 @@ class Annotation:
                Location: {self.location}\n
                Channel: {self.channel}''')
 
-    def generate_mask(self, image_width, image_height):
-        if self.mask == None:
-            mask = np.zeros((image_height, image_width), dtype=np.uint8)
+    def generate_mask(self):
+        if self.mask is None:
+            mask = np.zeros((IMAGE_HEIGHT, IMAGE_WIDTH), dtype=np.uint8)
             points = np.round(self.coordinates).astype(np.int32)
             cv2.fillPoly(mask,[points],color=1)
-            self.mask = mask
+            self.mask = mask.astype(bool)
         return self.mask
+        
+# Filters 
+def filter_annotations(annotations_dict, tag, location, channel):
+    annotations = annotations_dict[tag]
+    return [
+        a for a in annotations  
+        if a.location == location 
+        and a.channel == channel 
+    ]
         
     
     
