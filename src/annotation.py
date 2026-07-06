@@ -21,12 +21,13 @@ class Annotation:
                Channel: {self.channel}''')
 
     def generate_mask(self, image_width, image_height):
-        mask = np.zeros((image_height, image_width), dtype=np.uint8)
-        points = np.round(self.coordinates).astype(np.int32)
-        cv2.fillPoly(mask,[points],color=1)
-        self.mask = mask
-        np.savetxt("mask_output.txt", mask, fmt="%d")
-        return mask
+        if self.mask == None:
+            mask = np.zeros((image_height, image_width), dtype=np.uint8)
+            points = np.round(self.coordinates).astype(np.int32)
+            cv2.fillPoly(mask,[points],color=1)
+            self.mask = mask
+        return self.mask
+        
     
     
         
