@@ -10,6 +10,7 @@ import time
 
 json_path = "data/multi_image.json"
 multi_image_annotations = annotations_from_json(json_path)
+multi_image_annotations = AnnotationCollection(multi_image_annotations)
 
 folder_path = "data"
 full_annotations = annotations_from_folder(folder_path)
@@ -21,3 +22,5 @@ mlo_annotations = AnnotationCollection(mlo_annotations)
 visualize_benchmark(mlo_annotations, Query(label="manual annotations", tags=["manual_rRNA_annotation"]), [Query(label="CellposeSAM", tags=["cellpose_sam_rRNA_annotation"]), Query(label="Stardist", tags=["stardist_rRNA_annotation"]), Query(label="CondensateNet", tags=["condensate_net_rRNA_annotation"])])
 
 visualize_overlay(mlo_annotations, Query(label="manual annotations", tags=["manual_rRNA_annotation"]), Query(label="CellposeSAM", tags=["cellpose_sam_rRNA_annotation"]))
+
+print(run_benchmark(multi_image_annotations, Query(label="manual annotations", tags=["manual_DAPI_annotation"]), Query(label="CellposeSAM", tags=["cellpose_sam_DAPI_annotation"]), [iou, dice_coefficient, precision, recall, relative_error]))

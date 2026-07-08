@@ -11,6 +11,7 @@ def visualize_benchmark(annotation_collection, accurate_query, comparison_querie
     df.plot(kind = "bar", rot = 0)
     plt.show()
 
+
 def visualize_overlay(annotation_collection, accurate_query, comparison_query):
     accurate_annotations = annotation_collection.filter_by(accurate_query)
     comparison_annotations = annotation_collection.filter_by(comparison_query)

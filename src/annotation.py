@@ -74,11 +74,11 @@ class Query:
     
 class AnnotationCollection:
     def __init__(self, annotations=None):
-        if annotations is None:
-            self.annotations = []
-        else: 
-            self.annotations = annotations
-
+        self.annotations = []
+        self.spatial_index = {}
+        if annotations is not None:
+            self.add_annotations(annotations)
+                
     def __iter__(self):
         return iter(self.annotations)
     
@@ -87,13 +87,23 @@ class AnnotationCollection:
     
     def add_annotations(self, annotations):
         self.annotations.extend(annotations)
-    
+        for annotation in annotations:
+            key = (annotation.source_file, annotation.dataset_id, annotation.xy, 
+                annotation.z, annotation.time, annotation.channel)
+            if key not in self.spatial_index:
+                self.spatial_index[key] = [annotation]
+            else:
+                self.spatial_index[key].append(annotation)
+
     def filter_by(self, query):
         filtered = []
         for annotation in self.annotations:
             if query.matches(annotation):
                 filtered.append(annotation)
-        return AnnotationCollection(filtered)
+        return filtered
+        
+    
+
                         
     
 
