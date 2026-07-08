@@ -6,14 +6,14 @@ from mask_functions import *
 from metrics import *
 from benchmark import *
 
-def visualize_benchmark(accurate_tag, comparison_tags, annotations_dict):
-    df = run_group_benchmark(accurate_tag, comparison_tags, annotations_dict)
+def visualize_benchmark(annotation_collection, accurate_query, comparison_queries):
+    df = run_group_benchmark(annotation_collection, accurate_query, comparison_queries)
     df.plot(kind = "bar", rot = 0)
     plt.show()
 
-def visualize_overlay(accurate_tag, comparison_tag, location, channel, annotations_dict):
-    accurate_annotations = filter_annotations(annotations_dict, accurate_tag, location, channel)
-    comparison_annotations = filter_annotations(annotations_dict, comparison_tag, location, channel)
+def visualize_overlay(annotation_collection, accurate_query, comparison_query):
+    accurate_annotations = annotation_collection.filter_by(accurate_query)
+    comparison_annotations = annotation_collection.filter_by(comparison_query)
     accurate_mask = combine_masks(accurate_annotations)
     comparison_mask = combine_masks(comparison_annotations)
     overlay_mask = create_overlay_mask(accurate_mask, comparison_mask)
@@ -24,6 +24,7 @@ def visualize_overlay(accurate_tag, comparison_tag, location, channel, annotatio
     plt.legend(handles=[yellow_patch, red_patch, green_patch], bbox_to_anchor=(1.05, 1), 
     loc='upper left', borderaxespad=0.)
     plt.axis("off")
+    plt.title(str(comparison_query))
     plt.tight_layout()
     plt.show()
     return overlay_mask

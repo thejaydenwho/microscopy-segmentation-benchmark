@@ -8,23 +8,16 @@ from visualization import *
 import cProfile
 import time 
 
-path2 = "data/sample_DAPI.json"
-data2 = parse_annotations(path2)
-path = "data/multi_image.json"
-data = parse_annotations(path)
+json_path = "data/multi_image.json"
+multi_image_annotations = annotations_from_json(json_path)
 
-def main():
-    visualize_benchmark("manual_DAPI_annotation",['cellpose_sam_DAPI_annotation', 'stardist_DAPI_annotation'],data)
+folder_path = "data"
+full_annotations = annotations_from_folder(folder_path)
 
-start_time = time.perf_counter()
-main()
-end_time = time.perf_counter()
-print(end_time-start_time)
+json_path2 = "data/largescale_mlo.json"
+mlo_annotations = annotations_from_json(json_path2)
+mlo_annotations = AnnotationCollection(mlo_annotations)
 
-print(data2.keys())
+visualize_benchmark(mlo_annotations, Query(label="manual annotations", tags=["manual_rRNA_annotation"]), [Query(label="CellposeSAM", tags=["cellpose_sam_rRNA_annotation"]), Query(label="Stardist", tags=["stardist_rRNA_annotation"]), Query(label="CondensateNet", tags=["condensate_net_rRNA_annotation"])])
 
-
-visualize_overlay("manual_DAPI_annotation" , "cellpose_sam_DAPI_annotation", {"XY":0,"Z":0,"Time":0}, 0, data)
-
-print(filter_annotations(data, "manual_DAPI_annotation", {"XY":0,"Z":0,"Time":0}, 0))
-
+visualize_overlay(mlo_annotations, Query(label="manual annotations", tags=["manual_rRNA_annotation"]), Query(label="CellposeSAM", tags=["cellpose_sam_rRNA_annotation"]))

@@ -20,19 +20,17 @@ def dice_coefficient(mask1, mask2):
 
 def precision(accurate_mask, comparison_mask):
     true_positives = intersection(accurate_mask, comparison_mask)
-    false_negatives = area(accurate_mask) - true_positives
     false_positives = area(comparison_mask) - true_positives
     return (true_positives/float(true_positives + false_positives))
 
 def recall(accurate_mask, comparison_mask):
     true_positives = intersection(accurate_mask, comparison_mask)
     false_negatives = area(accurate_mask) - true_positives
-    false_positives = area(comparison_mask) - true_positives
     return (true_positives/float(true_positives + false_negatives))
 
-def relative_error(accurate_tag, comparison_tag, annotations_dict):
-    accurate_count = len(annotations_dict[accurate_tag])
-    comparison_count = len(annotations_dict[comparison_tag])
+def relative_error(accurate_annotations, comparison_annotations):
+    accurate_count = len(accurate_annotations)
+    comparison_count = len(comparison_annotations)
     return ((comparison_count - accurate_count)/ accurate_count)
 
 

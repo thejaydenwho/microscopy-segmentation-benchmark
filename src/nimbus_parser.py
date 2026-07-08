@@ -1,45 +1,51 @@
 import json
+import os
+from pathlib import Path
 from annotation import *
 
-# Given the path of the json file as a string, return a dictionary containing the data
-def load_json(path):
-    with open(path,'r') as file:
-        data = json.load(file)
-    return data
+def load_json(json_file):
+    with open(json_file,'r') as file:
+        data_dict = json.load(file)
+    return data_dict
 
-def get_annotations(data):
-    return data["annotations"]
-
-def parse_annotation(ann):
-    object_id = ann["_id"]
-    dataset_id = ann["datasetId"]
-    tags = ann["tags"]
-    shape = ann["shape"]
-    location = ann["location"]
-    channel = ann["channel"]
-    coordinates = ann["coordinates"]
+def annotation_from_entry(entry, source_file):
+    object_id = entry["_id"]
+    dataset_id = entry["datasetId"]
+    tags = entry["tags"]
+    shape = entry["shape"]
+    xy = entry["location"]["XY"]
+    z = entry["location"]["Z"]
+    time = entry["location"]["Time"]
+    channel = entry["channel"]
+    coordinates = entry["coordinates"]
     formatted_coordinates = []
     for point in coordinates:
         x_coordinate = point["x"]
         y_coordinate = point["y"]
         formatted_coordinates.append([x_coordinate,y_coordinate])
-    annotation_object = Annotation(object_id, dataset_id, tags, shape, location, channel, formatted_coordinates)
-    return (annotation_object, tags)
+    annotation = Annotation(object_id, dataset_id, source_file, tags, shape, xy, z, time, channel, formatted_coordinates)
+    return annotation
 
-def parse_annotations(path):
-    data = load_json(path)
-    annotations = get_annotations(data)
-    annotations_dict = {}
-    for ann in annotations:
-        (annotation_object, tags) = parse_annotation(ann)
-        for tag in tags:
-            if tag in annotations_dict:
-                annotations_dict[tag].append(annotation_object)
-            else:
-                annotations_dict[tag] = [annotation_object]
-    return annotations_dict
+def annotations_from_json(json_file):
+    data_dict = load_json(json_file)
+    entries = data_dict["annotations"]
+    annotation_list = []
+    source_file = os.path.basename(json_file)
+    for entry in entries:
+        annotation = annotation_from_entry(entry, source_file)
+        annotation_list.append(annotation)
+    return annotation_list
+
+def annotations_from_folder(folder_path):
+    all_annotations = []
+    folder = Path(folder_path)
+    for json_file in folder.glob("*.json"):
+        annotations = annotations_from_json(json_file)
+        all_annotations.extend(annotations)
+    return AnnotationCollection(all_annotations)
 
 
+'''
 def get_annotation_property_values(data):
     return data["annotationPropertyValues"]
 
@@ -65,3 +71,4 @@ def parse_annotation_property_values(path):
     apv = get_annotation_property_values(data)
     apv_list = parse_annotation_property_value(apv)
     return apv_list
+'''
