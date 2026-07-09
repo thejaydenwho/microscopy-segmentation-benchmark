@@ -26,9 +26,15 @@ mlo_annotations = AnnotationCollection(mlo_annotations)
 manual_query = Query(label="manual annotations", tags=["manual_DAPI_annotation"])
 cellpose_query = Query(label="CellposeSAM", tags=["cellpose_sam_DAPI_annotation"])
 stardist_query = Query(label="Stardist", tags=["stardist_DAPI_annotation"])
-condensate_query = Query(label="CondensateNet", tags=["condensate_net_DAPI_annotation"])
 
 
-df = run_benchmark(multi_image_annotations, manual_query,[cellpose_query,stardist_query,condensate_query], [iou, dice_coefficient, precision, recall, relative_error])
+df = run_benchmark(multi_image_annotations, manual_query,[cellpose_query,stardist_query], [iou, dice_coefficient, precision, recall])
+avg_df = average_dataframe(df)
+print(df)
+print(average_dataframe(df))
 
-print(mlo_annotations.annotations[1])
+create_bar_chart(avg_df, "Bar chart example")
+create_box_plot(df,[iou, dice_coefficient])
+create_vertical_histogram(df,[iou, dice_coefficient])
+create_horizontal_histogram(df,[iou, dice_coefficient])
+create_density(df,[iou, dice_coefficient])
