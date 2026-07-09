@@ -8,14 +8,14 @@ from visualization import *
 import cProfile
 import time 
 
-json_path = "data/multi_image.json"
+json_path = "inputdata/multi_image.json"
 multi_image_annotations = annotations_from_json(json_path)
 multi_image_annotations = AnnotationCollection(multi_image_annotations)
 
-folder_path = "data"
+folder_path = "inputdata"
 full_annotations = annotations_from_folder(folder_path)
 
-json_path2 = "data/largescale_mlo.json"
+json_path2 = "inputdata/largescale_mlo.json"
 mlo_annotations = annotations_from_json(json_path2)
 mlo_annotations = AnnotationCollection(mlo_annotations)
 
@@ -23,18 +23,13 @@ mlo_annotations = AnnotationCollection(mlo_annotations)
 
 #visualize_overlay(mlo_annotations, Query(label="manual annotations", tags=["manual_rRNA_annotation"]), Query(label="CellposeSAM", tags=["cellpose_sam_rRNA_annotation"]))
 
-manual_query = Query(label="manual annotations", tags=["manual_DAPI_annotation"])
-cellpose_query = Query(label="CellposeSAM", tags=["cellpose_sam_DAPI_annotation"])
-stardist_query = Query(label="Stardist", tags=["stardist_DAPI_annotation"])
+manual_query = Query(label="manual annotations", tags=["manual_DAPI"])
+cellpose_query = Query(label="CellposeSAM", tags=["cellpose_sam_DAPI"])
+stardist_query = Query(label="Stardist", tags=["stardist_dapi"])
 
+json_path3 = "inputdata/massive_test.json"
 
-df = run_benchmark(multi_image_annotations, manual_query,[cellpose_query,stardist_query], [iou, dice_coefficient, precision, recall])
-avg_df = average_dataframe(df)
-print(df)
-print(average_dataframe(df))
+mlo_annotations = AnnotationCollection(annotations_from_json(json_path3))
 
-create_bar_chart(avg_df, "Bar chart example")
-create_box_plot(df,[iou, dice_coefficient])
-create_vertical_histogram(df,[iou, dice_coefficient])
-create_horizontal_histogram(df,[iou, dice_coefficient])
-create_density(df,[iou, dice_coefficient])
+df = run_benchmark(mlo_annotations, manual_query, [cellpose_query,stardist_query],[iou,dice_coefficient,precision])
+create_bar_chart(average_dataframe(df),title="example")

@@ -24,7 +24,7 @@ def create_overlay_mask(accurate_mask, comparison_mask):
 
 def convert_to_binary_image(mask):
     binary_image = (mask * 255).astype(np.uint8)
-    cv2.imwrite("binary_image.png", binary_image)
+    cv2.imwrite("outputdata/binary_image.png", binary_image)
     return True
 
 def convert_to_rgb_image(mask):

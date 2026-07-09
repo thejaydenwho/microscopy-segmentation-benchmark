@@ -40,12 +40,12 @@ def run_benchmark(annotation_collection, accurate_query, comparison_queries, met
                     results.append(output)
             test_data.append(results)
     df = pd.DataFrame(test_data, columns=column_labels)
-    df.to_csv("benchmark_metrics.csv")
+    df.to_csv("outputdata/benchmark_metrics.csv")
     return df
 
 def average_dataframe(df):
     averaged_df = df.groupby("Algorithm").mean(numeric_only=True)
-    averaged_df.to_csv("averaged_metrics.csv")
+    averaged_df.to_csv("outputdata/averaged_metrics.csv")
     return averaged_df
 
 
