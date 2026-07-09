@@ -17,7 +17,8 @@ class Annotation:
         self.mask = None
         
     def __str__(self):
-        return(f'''Object ID: {self.object_id}\n
+        return(f'''\n
+               Object ID: {self.object_id}\n
                Dataset ID: {self.dataset_id}\n
                Source File: {self.source_file}\n
                Tags: {self.tags}\n
@@ -46,8 +47,37 @@ class Query:
         self.z = z
         self.time = time
         self.channel = channel
+
     def __str__(self):
         return self.label
+    
+    def __eq__(self,other):
+        if isinstance(other,Query):
+            attributes = ["label", "object_id", "dataset_id", "tags", "shape", "xy", "z", "time", "channel"]
+            for attribute in attributes:
+                self_attr = getattr(self, attribute)
+                other_attr = getattr(other, attribute)
+                if (self_attr != other_attr):
+                    return False
+            return True
+        else:
+            return False
+        
+    def __hash__(self):
+    # Only tags needs conversion because it is a mutable list
+        tags_hashable = frozenset(self.tags) if self.tags is not None else None
+        return hash((
+            self.label,
+            self.object_id,
+            self.dataset_id,
+            tags_hashable,
+            self.shape,
+            self.xy,
+            self.z,
+            self.time,
+            self.channel
+        ))
+
     def matches(self, annotation):
         attributes = [
             "object_id",

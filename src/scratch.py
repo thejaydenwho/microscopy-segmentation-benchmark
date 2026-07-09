@@ -19,8 +19,16 @@ json_path2 = "data/largescale_mlo.json"
 mlo_annotations = annotations_from_json(json_path2)
 mlo_annotations = AnnotationCollection(mlo_annotations)
 
-visualize_benchmark(mlo_annotations, Query(label="manual annotations", tags=["manual_rRNA_annotation"]), [Query(label="CellposeSAM", tags=["cellpose_sam_rRNA_annotation"]), Query(label="Stardist", tags=["stardist_rRNA_annotation"]), Query(label="CondensateNet", tags=["condensate_net_rRNA_annotation"])])
+#visualize_benchmark(mlo_annotations, Query(label="manual annotations", tags=["manual_rRNA_annotation"]), [Query(label="CellposeSAM", tags=["cellpose_sam_rRNA_annotation"]), Query(label="Stardist", tags=["stardist_rRNA_annotation"]), Query(label="CondensateNet", tags=["condensate_net_rRNA_annotation"])])
 
-visualize_overlay(mlo_annotations, Query(label="manual annotations", tags=["manual_rRNA_annotation"]), Query(label="CellposeSAM", tags=["cellpose_sam_rRNA_annotation"]))
+#visualize_overlay(mlo_annotations, Query(label="manual annotations", tags=["manual_rRNA_annotation"]), Query(label="CellposeSAM", tags=["cellpose_sam_rRNA_annotation"]))
 
-print(run_benchmark(multi_image_annotations, Query(label="manual annotations", tags=["manual_DAPI_annotation"]), Query(label="CellposeSAM", tags=["cellpose_sam_DAPI_annotation"]), [iou, dice_coefficient, precision, recall, relative_error]))
+manual_query = Query(label="manual annotations", tags=["manual_DAPI_annotation"])
+cellpose_query = Query(label="CellposeSAM", tags=["cellpose_sam_DAPI_annotation"])
+stardist_query = Query(label="Stardist", tags=["stardist_DAPI_annotation"])
+condensate_query = Query(label="CondensateNet", tags=["condensate_net_DAPI_annotation"])
+
+
+df = run_benchmark(multi_image_annotations, manual_query,[cellpose_query,stardist_query,condensate_query], [iou, dice_coefficient, precision, recall, relative_error])
+
+print(mlo_annotations.annotations[1])

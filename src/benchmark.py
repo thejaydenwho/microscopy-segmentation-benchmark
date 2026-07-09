@@ -29,34 +29,46 @@ def run_group_benchmark(annotation_collection, accurate_query, comparison_querie
     df.to_csv("benchmark_output.csv")
     return df
 
-def run_benchmark(annotation_collection, accurate_query, comparison_query, metrics):
+def group_annotations(annotations, accurate_query, comparison_queries):
+    accurate_list = []
+    comparison_dict = {}
+    for comparison_query in comparison_queries:
+        comparison_dict[comparison_query] = []
+    for annotation in annotations:
+        if accurate_query.matches(annotation):
+            accurate_list.append(annotation)
+        else:
+            for comparison_query in comparison_queries:
+                if comparison_query.matches(annotation):
+                    comparison_dict[comparison_query].append(annotation)
+                    break
+    return (accurate_list, comparison_dict)
+
+def run_benchmark(annotation_collection, accurate_query, comparison_queries, metrics):
     column_labels = [metric.__name__.replace("_", " ").upper() for metric in metrics]
     index_labels = []
-    results = {}
+    test_data = []
     for (spatial_key, annotations) in annotation_collection.spatial_index.items():
-        results[spatial_key] = []
-        index_labels.append(spatial_key)
-        accurate_list = []
-        comparison_list = []
-        for annotation in annotations:
-            if accurate_query.matches(annotation):
-                accurate_list.append(annotation)
-            elif comparison_query.matches(annotation):
-                comparison_list.append(annotation)
-        accurate_mask = combine_masks(accurate_list)
-        comparison_mask = combine_masks(comparison_list)
-        for metric in metrics:
-            if metric is relative_error:
-                output = metric(accurate_list, comparison_list)
-                results[spatial_key].append(output)
-            else:
-                output = metric(accurate_mask, comparison_mask)
-                results[spatial_key].append(output)
-    scores = list(results.values())
-    df = pd.DataFrame(scores, columns=column_labels, index=index_labels)
+        (accurate_list, comparison_dict) = group_annotations(annotations, accurate_query, comparison_queries)
+        for (comparison_query, comparison_list) in comparison_dict.items():
+            accurate_mask = combine_masks(accurate_list)
+            comparison_mask = combine_masks(comparison_list)
+            results = []
+            for metric in metrics:
+                if metric is relative_error:
+                    output = metric(accurate_list, comparison_list)
+                    results.append(output)
+                else:
+                    output = metric(accurate_mask, comparison_mask)
+                    results.append(output)
+            index_labels.append(str(comparison_query))
+            test_data.append(results)
+    df = pd.DataFrame(test_data, columns=column_labels, index=index_labels)
     df.to_csv("benchmark2_output.csv")
     return df
 
+
+        
 
         
         
