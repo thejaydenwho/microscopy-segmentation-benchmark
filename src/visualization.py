@@ -1,3 +1,6 @@
+# The purpose of this file is to use the benchmarking dataframes collected 
+# and visualize the data in different graphs
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -8,6 +11,8 @@ from mask_functions import *
 from metrics import *
 from benchmark import *
 
+# Uses an averaged dataframe to compare overall metrics betwene different models
+
 def create_bar_chart(df, title):
     transposed_df = df.T
     transposed_df.plot(kind = "bar", rot = 0)
@@ -16,27 +21,21 @@ def create_bar_chart(df, title):
     plt.title(title)
     plt.show()
 
-def create_box_plot(df, metrics):
-    column_labels = [
-        metric.__name__.replace("_", " ").upper()
-        for metric in metrics
-    ]
+# The four visualizing functions below 
+# use the raw benchmark dataframe to analyze distribution 
 
-    fig, axes = plt.subplots(
-        1,
-        len(column_labels),
-        figsize=(4 * len(column_labels), 4)
-    )
+def create_box_plot(df, metrics):
+    column_labels = [metric.__name__.replace("_", " ").upper()
+    for metric in metrics]
+
+    fig, axes = plt.subplots(1, len(column_labels),
+    figsize=(4 * len(column_labels), 4))
 
     if len(column_labels) == 1:
         axes = [axes]
 
     for ax, label in zip(axes, column_labels):
-        df.boxplot(
-            column=label,
-            by="Algorithm",
-            ax=ax
-        )
+        df.boxplot(column=label, by="Algorithm", ax=ax)
         ax.set_title(label)
         ax.set_xlabel("")
         ax.set_ylabel("Score")
@@ -127,12 +126,24 @@ def create_density(df, metrics):
     plt.tight_layout()
     plt.show()
 
-def visualize_overlay(annotation_collection, accurate_query, comparison_query):
-    accurate_annotations = annotation_collection.filter_by(accurate_query)
+# Create a binary image for a certain instance of object segmentation
+
+def convert_to_binary_image(annotation_collection, query, image_name):
+    filtered_list = annotation_collection.filter_by(query)
+    mask = combine_masks(filtered_list)
+    binary_image = (mask * 255).astype(np.uint8)
+    cv2.imwrite((f"outputdata/{image_name}"), binary_image)
+    return True
+
+# Create an RGB image visualizing the overlay 
+# between a set of ground truth annotations and comparison annotations
+
+def visualize_overlay(annotation_collection, ground_truth_query, comparison_query, image_name):
+    ground_truth_annotations = annotation_collection.filter_by(ground_truth_query)
     comparison_annotations = annotation_collection.filter_by(comparison_query)
-    accurate_mask = combine_masks(accurate_annotations)
+    ground_truth_mask = combine_masks(ground_truth_annotations)
     comparison_mask = combine_masks(comparison_annotations)
-    overlay_mask = create_overlay_mask(accurate_mask, comparison_mask)
+    overlay_mask = create_overlay_mask(ground_truth_mask, comparison_mask)
     plt.imshow(overlay_mask)
     yellow_patch = mpatches.Patch(color='yellow', label='True Positive (TP)')
     red_patch = mpatches.Patch(color='red', label='False Positive (FP)')
@@ -140,10 +151,10 @@ def visualize_overlay(annotation_collection, accurate_query, comparison_query):
     plt.legend(handles=[yellow_patch, red_patch, green_patch], bbox_to_anchor=(1.05, 1), 
     loc='upper left', borderaxespad=0.)
     plt.axis("off")
-    plt.title(str(comparison_query))
+    plt.title(f"{str(comparison_query)} vs {str(ground_truth_query)}")
     plt.tight_layout()
-    plt.show()
-    return overlay_mask
+    plt.savefig(f"outputdata/{image_name}", dpi=300, bbox_inches="tight")
+    return True
 
 
     

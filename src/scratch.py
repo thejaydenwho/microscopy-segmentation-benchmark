@@ -1,3 +1,5 @@
+# This file is used to run and test code.
+
 import json
 from config import *
 from nimbus_parser import * 
@@ -19,10 +21,6 @@ json_path2 = "inputdata/largescale_mlo.json"
 mlo_annotations = annotations_from_json(json_path2)
 mlo_annotations = AnnotationCollection(mlo_annotations)
 
-#visualize_benchmark(mlo_annotations, Query(label="manual annotations", tags=["manual_rRNA_annotation"]), [Query(label="CellposeSAM", tags=["cellpose_sam_rRNA_annotation"]), Query(label="Stardist", tags=["stardist_rRNA_annotation"]), Query(label="CondensateNet", tags=["condensate_net_rRNA_annotation"])])
-
-#visualize_overlay(mlo_annotations, Query(label="manual annotations", tags=["manual_rRNA_annotation"]), Query(label="CellposeSAM", tags=["cellpose_sam_rRNA_annotation"]))
-
 manual_query = Query(label="manual annotations", tags=["manual_DAPI"])
 cellpose_query = Query(label="CellposeSAM", tags=["cellpose_sam_DAPI"])
 stardist_query = Query(label="Stardist", tags=["stardist_dapi"])
@@ -33,3 +31,8 @@ mlo_annotations = AnnotationCollection(annotations_from_json(json_path3))
 
 df = run_benchmark(mlo_annotations, manual_query, [cellpose_query,stardist_query],[iou,dice_coefficient,precision])
 create_bar_chart(average_dataframe(df),title="example")
+create_density(df,[iou,dice_coefficient,precision])
+
+gt_query = Query(label="Manual", tags=["manual_DAPI_annotation"], xy=0, z=0, time=0, channel=0)
+comparison_query = Query(label="CellposeSAM", tags=["cellpose_sam_DAPI_annotation"], xy=0, z=0, time=0, channel=0)
+visualize_overlay(multi_image_annotations, gt_query, comparison_query, "ExampleOverlay.png")
