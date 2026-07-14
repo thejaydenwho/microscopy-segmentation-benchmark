@@ -35,4 +35,21 @@ create_density(df,[iou,dice_coefficient,precision])
 
 gt_query = Query(label="Manual", tags=["manual_DAPI_annotation"], xy=0, z=0, time=0, channel=0)
 comparison_query = Query(label="CellposeSAM", tags=["cellpose_sam_DAPI_annotation"], xy=0, z=0, time=0, channel=0)
+
+visualize_binary_image(multi_image_annotations, comparison_query, "BinaryImage.png")
 visualize_overlay(multi_image_annotations, gt_query, comparison_query, "ExampleOverlay.png")
+
+
+rRNA_annotations = AnnotationCollection(annotations_from_json("inputdata/rRNA_sample_testing.json"))
+example_query = Query(label="Manual", tags=["manual"], xy=0, z=4, time=1, channel=3)
+example_query2 = Query(label="CellposeSAM", tags=["cellpose_sam"], xy=0, z=4, time=1, channel=3)
+visualize_binary_image(rRNA_annotations, example_query, "BinaryImage2.png")
+visualize_overlay(rRNA_annotations, example_query, example_query2, "OverlayImage2.png")
+gt_query2 = Query(label="Manual", tags=["manual"])
+example_query2 = Query(label="CellposeSAM", tags=["cellpose_sam"])
+example_query3 = Query(label="Stardist", tags=["stardist"])
+
+df = run_benchmark(rRNA_annotations, gt_query2, [example_query2, example_query3],[dice_coefficient,precision,iou])
+avg_df = average_dataframe(df)
+create_bar_chart(avg_df, title="CellposeSAM vs. Stardist")
+create_density(df, [dice_coefficient, precision, iou])

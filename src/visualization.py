@@ -128,7 +128,7 @@ def create_density(df, metrics):
 
 # Create a binary image for a certain instance of object segmentation
 
-def convert_to_binary_image(annotation_collection, query, image_name):
+def visualize_binary_image(annotation_collection, query, image_name):
     filtered_list = annotation_collection.filter_by(query)
     mask = combine_masks(filtered_list)
     binary_image = (mask * 255).astype(np.uint8)
