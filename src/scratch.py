@@ -30,8 +30,8 @@ json_path3 = "inputdata/massive_test.json"
 mlo_annotations = AnnotationCollection(annotations_from_json(json_path3))
 
 df = run_benchmark(mlo_annotations, manual_query, [cellpose_query,stardist_query],[iou,dice_coefficient,precision])
-create_bar_chart(average_dataframe(df),title="example")
-create_density(df,[iou,dice_coefficient,precision])
+create_bar_chart(average_dataframe(df),metrics=[iou,dice_coefficient],image_name="bc.png")
+create_density(df,[iou,dice_coefficient,precision],"density2.png")
 
 gt_query = Query(label="Manual", tags=["manual_DAPI_annotation"], xy=0, z=0, time=0, channel=0)
 comparison_query = Query(label="CellposeSAM", tags=["cellpose_sam_DAPI_annotation"], xy=0, z=0, time=0, channel=0)
@@ -40,7 +40,7 @@ visualize_binary_image(multi_image_annotations, comparison_query, "BinaryImage.p
 visualize_overlay(multi_image_annotations, gt_query, comparison_query, "ExampleOverlay.png")
 
 
-rRNA_annotations = AnnotationCollection(annotations_from_json("inputdata/rRNA_sample_testing.json"))
+rRNA_annotations = AnnotationCollection(annotations_from_json("inputdata/rRNAcellposetrain1.json"))
 example_query = Query(label="Manual", tags=["manual"], xy=0, z=4, time=1, channel=3)
 example_query2 = Query(label="CellposeSAM", tags=["cellpose_sam"], xy=0, z=4, time=1, channel=3)
 visualize_binary_image(rRNA_annotations, example_query, "BinaryImage2.png")
@@ -48,8 +48,10 @@ visualize_overlay(rRNA_annotations, example_query, example_query2, "OverlayImage
 gt_query2 = Query(label="Manual", tags=["manual"])
 example_query2 = Query(label="CellposeSAM", tags=["cellpose_sam"])
 example_query3 = Query(label="Stardist", tags=["stardist"])
+example_query4 = Query(label="CellposeTrained", tags=["cellpose"])
 
-df = run_benchmark(rRNA_annotations, gt_query2, [example_query2, example_query3],[dice_coefficient,precision,iou])
+df = run_benchmark(rRNA_annotations, gt_query2, [example_query2, example_query3, example_query4],[dice_coefficient,precision,iou,recall,relative_error])
 avg_df = average_dataframe(df)
-create_bar_chart(avg_df, title="CellposeSAM vs. Stardist")
-create_density(df, [dice_coefficient, precision, iou])
+create_bar_chart(avg_df, [iou, dice_coefficient], image_name="barchart.png")
+create_density(df, [dice_coefficient, precision, iou], image_name="density.png")
+create_vertical_histogram(df, [dice_coefficient, precision, iou], image_name="histogram.png")

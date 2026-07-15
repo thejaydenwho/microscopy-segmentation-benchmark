@@ -13,18 +13,22 @@ from benchmark import *
 
 # Uses an averaged dataframe to compare overall metrics betwene different models
 
-def create_bar_chart(df, title):
-    transposed_df = df.T
-    transposed_df.plot(kind = "bar", rot = 0)
+def create_bar_chart(df, metrics, image_name, title = ""):
+    column_labels = [metric.__name__.replace("_", " ").upper() for metric in metrics]
+    summary_df = df.groupby("Algorithm")[column_labels].mean()
+    transposed_df = summary_df.T
+    ax = transposed_df.plot(kind="bar", rot=0)
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     plt.xlabel("Metric")
     plt.ylabel("Score")
     plt.title(title)
-    plt.show()
+    plt.savefig(f"outputdata/{image_name}", dpi=300, bbox_inches="tight")
+    plt.close()
 
 # The four visualizing functions below 
 # use the raw benchmark dataframe to analyze distribution 
 
-def create_box_plot(df, metrics):
+def create_box_plot(df, metrics, image_name, title = ""):
     column_labels = [metric.__name__.replace("_", " ").upper()
     for metric in metrics]
 
@@ -40,11 +44,12 @@ def create_box_plot(df, metrics):
         ax.set_xlabel("")
         ax.set_ylabel("Score")
 
-    plt.suptitle("")
+    plt.suptitle(title)
     plt.tight_layout()
-    plt.show()
+    plt.savefig(f"outputdata/{image_name}", dpi=300, bbox_inches="tight")
+    plt.close()
 
-def create_vertical_histogram(df, metrics):
+def create_vertical_histogram(df, metrics, image_name, title = ""):
     column_labels = [metric.__name__.replace("_", " ").upper() for metric in metrics]
     algorithms = df["Algorithm"].unique()
     fig, axes = plt.subplots(
@@ -65,9 +70,10 @@ def create_vertical_histogram(df, metrics):
             ax.set_ylabel("Frequency")
             ax.set_xlim(0, 1)
     plt.tight_layout()
-    plt.show()
+    plt.savefig(f"outputdata/{image_name}", dpi=300, bbox_inches="tight")
+    plt.close()
 
-def create_horizontal_histogram(df, metrics):
+def create_horizontal_histogram(df, metrics, image_name, title = ""):
     column_labels = [
         metric.__name__.replace("_", " ").upper()
         for metric in metrics
@@ -90,10 +96,12 @@ def create_horizontal_histogram(df, metrics):
             ax.set_xlabel("Score")
             ax.set_ylabel("Frequency")
             ax.set_xlim(0, 1)
+    plt.suptitle(title)
     plt.tight_layout()
-    plt.show()
+    plt.savefig(f"outputdata/{image_name}", dpi=300, bbox_inches="tight")
+    plt.close()
 
-def create_density(df, metrics):
+def create_density(df, metrics, image_name, title = ""):
     column_labels = [metric.__name__.replace("_", " ").upper() for metric in metrics]
     algorithms = df["Algorithm"].unique()
     fig, axes = plt.subplots(
@@ -123,8 +131,10 @@ def create_density(df, metrics):
             ax.set_xlabel("Score")
             ax.set_ylabel("Density")
             ax.set_xlim(0, 1)
+    plt.suptitle(title)
     plt.tight_layout()
-    plt.show()
+    plt.savefig(f"outputdata/{image_name}", dpi=300, bbox_inches="tight")
+    plt.close()
 
 # Create a binary image for a certain instance of object segmentation
 
@@ -154,6 +164,7 @@ def visualize_overlay(annotation_collection, ground_truth_query, comparison_quer
     plt.title(f"{str(comparison_query)} vs {str(ground_truth_query)}")
     plt.tight_layout()
     plt.savefig(f"outputdata/{image_name}", dpi=300, bbox_inches="tight")
+    plt.close()
     return True
 
 
