@@ -74,13 +74,15 @@ print(len(annotation_collection))
 visualize_binary_image(annotation_collection, query=Query("hello"), image_name="testing.png")
 '''
 
-annotation_col = AnnotationCollection(annotations_from_json("inputdata/scientificfigures.json"))
+annotation_col = AnnotationCollection(annotations_from_json("inputdata/comp2.json"))
 print(len(annotation_col))
 
 
 gt_query = Query(label = "Ground Truth", tags=["testing"])
 base_model = Query(label = "Cyto3 Base Model", tags=["cyto_3"])
-e10_model = Query(label = "Trained Model", tags=["10E"])
+e10_model = Query(label = "Trained Model (10 Epoch)", tags=["10E"])
+e20_model = Query(label = "Trained Model (20 Epoch)", tags=["20E"])
+ei20_model = Query(label = "Trained Model Iter (20 Epoch)", tags=["20EI"])
 stardist = Query(label = "Stardist", tags=["stardist"])
 cellpose_sam = Query(label = "CellposeSAM", tags=["cellpose_sam"])
 
@@ -92,7 +94,7 @@ e50_model = Query(label = "50 Epoch", tags=["50E"])
 e60_model = Query(label = "60 Epoch", tags=["60E"])
 '''
 visualize_overlay(annotation_col, gt_query, base_model, "base.png")
-results = run_benchmark(annotation_col, gt_query, [cellpose_sam, stardist, base_model,e10_model], [dice_coefficient,precision,iou,recall,relative_error])
+results = run_benchmark(annotation_col, gt_query, [cellpose_sam, stardist, base_model,e10_model,e20_model,ei20_model], [dice_coefficient,precision,iou,recall,relative_error])
 avg_results = average_dataframe(results)
 
 create_bar_chart(avg_results, [iou, dice_coefficient, precision, recall], "scientific_figure.png", "Trained Cellpose Model vs. Alternate Segmentation Models")
