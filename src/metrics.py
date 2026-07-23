@@ -54,6 +54,8 @@ def recall(ground_truth_mask, comparison_mask):
 
 def relative_error(ground_truth_annotations, comparison_annotations):
     ground_truth_count = len(ground_truth_annotations)
+    if ground_truth_count == 0:
+        return np.nan
     comparison_count = len(comparison_annotations)
     return ((comparison_count - ground_truth_count)/ ground_truth_count)
 
