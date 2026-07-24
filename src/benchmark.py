@@ -46,22 +46,28 @@ def run_benchmark(annotation_collection, ground_truth_query, comparison_queries,
         (ground_truth_list, comparison_dict) = group_annotations(annotations, ground_truth_query, comparison_queries)
 
         for (comparison_query, comparison_list) in comparison_dict.items():
-            ground_truth_mask = combine_masks(ground_truth_list)
-            comparison_mask = combine_masks(comparison_list)
-            results = []
-            results.extend([spatial_key, str(comparison_query)])
 
-            for metric in metrics:
+            if len(ground_truth_list) == 0 or len(comparison_list) == 0:
+                continue
 
-                if metric is relative_error:
-                    output = metric(ground_truth_list, comparison_list)
-                    results.append(output)
+            else:
+                ground_truth_mask = combine_masks(ground_truth_list)
+                comparison_mask = combine_masks(comparison_list)
+                results = []
+                results.extend([spatial_key, str(comparison_query)])
 
-                else:
-                    output = metric(ground_truth_mask, comparison_mask)
-                    results.append(output)
+                for metric in metrics:
 
-            test_data.append(results)
+                    if metric is relative_error:
+                        output = metric(ground_truth_list, comparison_list)
+                        results.append(output)
+
+                    else:
+                        output = metric(ground_truth_mask, comparison_mask)
+                        results.append(output)
+
+                test_data.append(results)
+                
     df = pd.DataFrame(test_data, columns=column_labels)
     df.to_csv("outputdata/benchmark_metrics.csv")
     return df
