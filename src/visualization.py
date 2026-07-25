@@ -28,25 +28,44 @@ def create_bar_chart(df, metrics, image_name, title = ""):
 # The four visualizing functions below 
 # use the raw benchmark dataframe to analyze distribution 
 
-def create_box_plot(df, metrics, image_name, title = ""):
-    column_labels = [metric.__name__.replace("_", " ").upper()
-    for metric in metrics]
+def create_box_plot(df, metrics, image_name, title=""):
+    column_labels = [
+        metric.__name__.replace("_", " ").upper()
+        for metric in metrics
+    ]
 
-    fig, axes = plt.subplots(1, len(column_labels),
-    figsize=(4 * len(column_labels), 4))
+    fig, axes = plt.subplots(
+        1,
+        len(column_labels),
+        figsize=(6 * len(column_labels), 5)
+    )
 
     if len(column_labels) == 1:
         axes = [axes]
 
     for ax, label in zip(axes, column_labels):
         df.boxplot(column=label, by="Algorithm", ax=ax)
+
         ax.set_title(label)
         ax.set_xlabel("")
-        ax.set_ylabel("Score")
+        ax.set_ylabel("Metric Score")
+
+        # Rotate algorithm names for readability
+        ax.tick_params(axis="x", rotation=45)
+
+        # Align rotated labels to the right
+        for tick in ax.get_xticklabels():
+            tick.set_horizontalalignment("right")
 
     plt.suptitle(title)
     plt.tight_layout()
-    plt.savefig(f"outputdata/{image_name}", dpi=300, bbox_inches="tight")
+
+    plt.savefig(
+        f"outputdata/{image_name}",
+        dpi=300,
+        bbox_inches="tight"
+    )
+
     plt.close()
 
 def create_vertical_histogram(df, metrics, image_name, title = ""):

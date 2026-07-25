@@ -37,7 +37,7 @@ def group_annotations(annotations, ground_truth_query, comparison_queries):
 # Benchmark the given metrics across each of the spatial locations
 # within the AnnotationCollection based on the Queries
 
-def run_benchmark(annotation_collection, ground_truth_query, comparison_queries, metrics):
+def run_benchmark(annotation_collection, ground_truth_query, comparison_queries, metrics, csv_name):
     column_labels = ["Spatial Index", "Algorithm"]
     column_labels.extend([metric.__name__.replace("_", " ").upper() for metric in metrics])
     test_data = []
@@ -69,15 +69,15 @@ def run_benchmark(annotation_collection, ground_truth_query, comparison_queries,
                 test_data.append(results)
                 
     df = pd.DataFrame(test_data, columns=column_labels)
-    df.to_csv("outputdata/benchmark_metrics.csv")
+    df.to_csv(f"outputdata/{csv_name}")
     return df
 
 # For each model being tested, average the benchmarking data
 # gathered across all the spatial locations
 
-def average_dataframe(df):
+def average_dataframe(df, csv_name):
     averaged_df = df.groupby("Algorithm").mean(numeric_only=True)
-    averaged_df.to_csv("outputdata/averaged_metrics.csv")
+    averaged_df.to_csv(f"outputdata/{csv_name}")
     return averaged_df
 
 
